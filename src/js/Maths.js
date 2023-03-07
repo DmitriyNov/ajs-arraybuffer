@@ -1,5 +1,4 @@
 export default class Maths {
-  // Если назвать класс Math, то дальше не получится использовать Math.floor() Math.log2()
   constructor(name, type) {
     this.name = name;
     this.type = type;
@@ -7,15 +6,29 @@ export default class Maths {
     this.stoned = false;
   }
 
-  set attack(value) {
-    if (this.stoned) {
-      this._attack = Math.floor(value * (1.1 - this.distance * 0.1) - Math.log2(this.distance) * 5);
-    } else {
-      this._attack = Math.floor(value * (1.1 - this.distance * 0.1));
-    }
+  set distance(value) {
+    this.attack = Math.floor(this.baseAttack * (1.1 - value * 0.1));
+    this._distance = value;
   }
 
-  get attack() {
-    return this._attack;
+  get distance() {
+    return this._distance;
+  }
+
+  set stoned(value) {
+    // Тут логика такая, что если дебафаем персонажа и на нём сейчас нет дебафа, то он применяется,
+    // а если он уже есть, то никак не влияет
+    if (value && !this.stoned) {
+      this.attack = Math.floor(this.attack - Math.log2(this.distance) * 5);
+    // Тут соответственно наоборот, если дебаф снимем и он есть, то атака увеличивается
+    } else if (!value && this.stoned) {
+      // Эта строка у меня не покрыта, но по заданию такого вроде и не требовалось реализовывать
+      this.attack = Math.floor(this.attack + Math.log2(this.distance) * 5);
+    }
+    this._stoned = value;
+  }
+
+  get stoned() {
+    return this._stoned;
   }
 }
